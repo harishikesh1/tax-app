@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  
+
 
   // generating pdf 
   async function generatePdf(id) {
@@ -179,8 +179,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     const blob = await response.blob();
     const pdfUrl = URL.createObjectURL(blob);
-    // open the PDF in a new tab
-    window.open(pdfUrl, '_blank');
+    const a = document.createElement("a");
+    a.href = pdfUrl;
+    a.target = "_blank";
+
+    a.download = "invoice.pdf";
+    
+    a.click();
 
   }
 
@@ -198,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
       Swal.fire('Success', 'Invoice saved successfully!', 'success');
       const res = await response.json();
       console.log(res);
-      
+
       return res.customId;
 
     } else {
