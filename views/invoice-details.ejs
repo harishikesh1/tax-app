@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Form</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/app.js"></script>
+</head>
+<style>
+    #items-table input[name="name"] {
+        width: 160px;
+    }
+
+    #items-table input[name="rate"] {
+        width: 100px;
+    }
+
+    #items-table input[name="amount"] {
+        width: 120px;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<body>
+    <div class="d-flex flex-column align-items-center justify-content-center w-100">
+        <div class="container">
+            <form id="invoice-form">
+                <div class="row">
+                
+                    <div class="col-lg-10  ">
+                        <div class="card p-4 p-xl-5 my-3 my-xl-4">
+                            <h1 class="text-center pb-5">TAX INVOICE</h1>
+                          
+                            <div class="d-flex flex-row align-items-start justify-content-between mb-3">
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex flex-row align-items-center justify-content-between mb-2">
+                                        <span class="fw-bold me-2">Current Date:</span>
+                                        <input name="currentdate" type="date" class="form-control"
+                                            style="max-width: 150px;" id="currentDate"
+                                            value="<%= invoice.currentdate %>">
+                                    </div>
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <span class="fw-bold me-2">Due Date:</span>
+                                        <input name="duedate" type="date" class="form-control" style="max-width: 150px;"
+                                            id="dueDate" value="<%= invoice.duedate %>">
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row align-items-center">
+                                    <span class="fw-bold me-2">Invoice #</span>
+                                    <input name="invoiceNumber" min="1" type="number" class="form-control"
+                                        value="<%= invoice.invoiceNumber %>" style="max-width: 70px;"
+                                        id="invoiceNumber">
+                                </div>
+                            </div>
+                            <hr class="my-4">
+                           
+                            <div class="mb-5 row">
+                                <div class="col">
+                                    <label class="fw-bold form-label">Bill from:</label>
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light"
+                                        id="companyName" placeholder="Your Company"
+                                        value="<%= invoice.billFrom.companyName %>">
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light" id="name"
+                                        placeholder="Your Name" value="<%= invoice.billFrom.name %>">
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light"
+                                        id="companyGSTIN" placeholder="Company's GSTIN"
+                                        value="<%= invoice.billFrom.gstin %>">
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light" id="address"
+                                        placeholder="Company's Address" value="<%= invoice.billFrom.address %>">
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light" id="city"
+                                        placeholder="City" value="<%= invoice.billFrom.city %>">
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light" id="zip"
+                                        placeholder="Zip" value="<%= invoice.billFrom.zip %>">
+                                </div>
+                                <div class="col">
+                                    <label class="fw-bold form-label">Bill to:</label>
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light"
+                                        id="clientCompanyName" placeholder="Company"
+                                        value="<%= invoice.billTo.companyName %>">
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light"
+                                        id="clientName" placeholder="Client's Name" value="<%= invoice.billTo.name %>">
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light"
+                                        id="clientCompanyGSTIN" placeholder="Client's GSTIN"
+                                        value="<%= invoice.billTo.gstin %>">
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light"
+                                        id="clientAddress" placeholder="Client's Billing Address"
+                                        value="<%= invoice.billTo.address %>">
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light"
+                                        id="clientCity" placeholder="City" value="<%= invoice.billTo.city %>">
+                                    <input type="text" class="form-control form-control-sm mb-2 bg-light" id="clientZip"
+                                        placeholder="Zip" value="<%= invoice.billTo.zip %>">
+                                </div>
+                            </div>
+                         
+                            <div>
+                                <div class="table-responsive">
+
+                                    <table class="table" id="items-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ITEM</th>
+                                                <th>QTY</th>
+                                                <th>RATE</th>
+                                                <th>SGST</th>
+                                                <th>CGST</th>
+                                                <th>Cess</th>
+                                                <th>Amount</th>
+                                                <th class="text-center">ACTION</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="item-rows">
+                                            <% invoice.items.forEach(item=> { %>
+                                                <tr class="item-row">
+                                                    <td><input placeholder="Item name" name="name" type="text"
+                                                            class="form-control" value="<%= item.name %>"></td>
+                                                    <td><input name="quantity" step="1" type="number"
+                                                            class="form-control" value="<%= item.quantity %>"></td>
+                                                    <td><input name="rate" step="1" type="number"
+                                                            class="text-end form-control" value="<%= item.rate %>"></td>
+                                                    <td><input name="sgst" step="0.1" type="number"
+                                                            class="text-end form-control" value="<%= item.sgst %>"></td>
+                                                    <td><input name="cgst" step="0.1" type="number"
+                                                            class="text-end form-control" value="<%= item.cgst %>"></td>
+                                                    <td><input name="cess" step="0.1" type="number"
+                                                            class="text-end form-control" value="<%= item.cess %>"></td>
+                                                    <td><input name="amount" step="0.1" type="number"
+                                                            class="text-end form-control" value="<%= item.amount %>"
+                                                            readonly></td>
+                                                    <td class="text-center"><button type="button"
+                                                            class="btn btn-danger remove-item">Remove</button></td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <button type="button" id="add-item-btn" class="btn btn-primary">Add Item</button>
+                            </div>
+                      
+                            <div class="mt-4 justify-content-end row">
+                                <div class="col-lg-6">
+                                    <div class="d-flex flex-row align-items-start justify-content-between">
+                                        <span class="fw-bold">Subtotal:</span><span id="subtotal">₹ <%= invoice.subtotal
+                                                %></span>
+                                    </div>
+                                    <div class="d-flex flex-row align-items-start justify-content-between mt-2">
+                                        <span class="fw-bold">Tax:</span><span id="tax">₹ <%= invoice.tax %></span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex flex-row align-items-start justify-content-between"
+                                        style="font-size: 1.125rem;">
+                                        <span class="fw-bold">Total:</span><span class="fw-bold" id="total">₹ <%=
+                                                invoice.total %></span>
+                                    </div>
+                                </div>
+                            </div>
+                          
+                            <hr class="my-4">
+                            <label class="fw-bold form-label">Terms & Conditions</label>
+                            <textarea placeholder="Thank you for doing business with us. Have a great day!" name="notes"
+                                rows="1" class="my-2 form-control"><%= invoice.notes %></textarea>
+                        </div>
+                    </div>
+                   
+                    <div class="col-lg-2  ">
+                        <div class="sticky-top pt-md-3 pt-xl-4">
+                            <button id="update-btn" class="btn mb-2 btn-success">Update Invoice</button>
+                            <button id="delete-btn" class="btn mb-2 btn-danger">Delete Invoice</button>
+                            <button id="u-generate-btn" class="btn mb-2 btn-primary">Generate Invoice</button>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

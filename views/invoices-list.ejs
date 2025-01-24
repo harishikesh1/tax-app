@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Invoices</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .invoice-id {
+            width: 10%;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+
+        table tbody tr:hover {
+            border: 2px solid #dddddd !important;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container my-5">
+        <h1 class="text-center mb-4">All Invoices</h1>
+
+        <% if (invoices && invoices.length> 0) { %>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="invoice-id">Invoice #</th>
+                        <th>Bill From</th>
+                        <th>Bill To</th>
+                        <th>Subtotal</th>
+                        <th>Tax</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% invoices.forEach((invoice, index)=> { %>
+                        <tr onclick="window.open('/invoices/<%= invoice.customId %>', '_blank')">
+                            <td>
+                                <%= index + 1 %>
+                            </td>  
+                            <td>
+                                <strong>
+                                    <%= invoice.billFrom.companyName %>
+                                </strong><br>
+                                <%= invoice.billFrom.name %>
+                            </td>
+                            <td>
+                                <strong>
+                                    <%= invoice.billTo.companyName %>
+                                </strong><br>
+                                <%= invoice.billTo.name %>
+                            </td>
+                            <td>₹ <%= invoice.subtotal %>
+                            </td>
+                            <td>₹ <%= invoice.tax %>
+                            </td>
+                            <td>₹ <%= invoice.total %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+            <% } else { %>
+                <p class="text-center">No invoices available.</p>
+                <% } %>
+    </div>
+</body>
+
+</html>
